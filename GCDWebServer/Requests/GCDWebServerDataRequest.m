@@ -31,6 +31,7 @@
 
 #import "GCDWebServerPrivate.h"
 
+// Data Request, 就是将数据存储到内存里面的 NSMutableData 里面.
 @interface GCDWebServerDataRequest ()
 @property(nonatomic) NSMutableData* data;
 @end
@@ -55,6 +56,7 @@
   return YES;
 }
 
+// Write 就是拼接 data 到内存里面.
 - (BOOL)writeData:(NSData*)data error:(NSError**)error {
   [_data appendData:data];
   return YES;
@@ -77,6 +79,7 @@
 
 @implementation GCDWebServerDataRequest (Extensions)
 
+// 其实当做计算属性可能更加好一点, 专门找一个成员变量存储, 会让效率更加高一点. 
 - (NSString*)text {
   if (_text == nil) {
     if ([self.contentType hasPrefix:@"text/"]) {

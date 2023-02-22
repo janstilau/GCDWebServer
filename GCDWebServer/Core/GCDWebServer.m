@@ -1,30 +1,3 @@
-/*
- Copyright (c) 2012-2019, Pierre-Olivier Latour
- All rights reserved.
- 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * The name of Pierre-Olivier Latour may not be used to endorse
- or promote products derived from this software without specific
- prior written permission.
- 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL PIERRE-OLIVIER LATOUR BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #if !__has_feature(objc_arc)
 #error GCDWebServer requires ARC
 #endif
@@ -471,10 +444,15 @@ static inline NSString* _EncodeBase64(NSString* string) {
 }
 
 // 在这里, 进行了真正的接口监听
-- (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket isIPv6:(BOOL)isIPv6 {
+- (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket
+                                                       isIPv6:(BOOL)isIPv6 {
   dispatch_group_enter(_sourceGroup);
-  dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listeningSocket, 0, dispatch_get_global_queue(_dispatchQueuePriority, 0));
+  dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
+                                                    listeningSocket,
+                                                    0,
+                                                    dispatch_get_global_queue(_dispatchQueuePriority, 0));
   dispatch_source_set_cancel_handler(source, ^{
+    // 直到 cancel 了, 才进行 group 的退出.
     @autoreleasepool {
       int result = close(listeningSocket);
       if (result != 0) {
@@ -485,7 +463,10 @@ static inline NSString* _EncodeBase64(NSString* string) {
     }
     dispatch_group_leave(self->_sourceGroup);
   });
+  
+  
   dispatch_source_set_event_handler(source, ^{
+    // 真正的 Socket 监听的代码.
     @autoreleasepool {
       struct sockaddr_storage remoteSockAddr;
       socklen_t remoteAddrLen = sizeof(remoteSockAddr);
@@ -700,6 +681,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   
   dispatch_source_cancel(_source6);
   dispatch_source_cancel(_source4);
+  // 这里的 dispatch_group_wait, 使得程序能够长期保持读取状态.
   dispatch_group_wait(_sourceGroup, DISPATCH_TIME_FOREVER);  // Wait until the cancellation handlers have been called which guarantees the listening sockets are closed
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
   dispatch_release(_source6);

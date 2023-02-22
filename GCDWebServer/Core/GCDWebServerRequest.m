@@ -249,6 +249,7 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
 - (void)prepareForWriting {
   _writer = self;
   if ([GCDWebServerNormalizeHeaderValue([self.headers objectForKey:@"Content-Encoding"]) isEqualToString:@"gzip"]) {
+    // 压缩文件, 有着特殊的处理逻辑. 
     GCDWebServerGZipDecoder* decoder = [[GCDWebServerGZipDecoder alloc] initWithRequest:self writer:_writer];
     [_decoders addObject:decoder];
     _writer = decoder;
