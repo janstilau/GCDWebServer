@@ -470,6 +470,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   return -1;
 }
 
+// 在这里, 进行了真正的接口监听
 - (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket isIPv6:(BOOL)isIPv6 {
   dispatch_group_enter(_sourceGroup);
   dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listeningSocket, 0, dispatch_get_global_queue(_dispatchQueuePriority, 0));
