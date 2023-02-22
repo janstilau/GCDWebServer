@@ -227,7 +227,7 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
 }
 
 // 当 Request 还有 Body 的时候, 会进行自 write 的逻辑准备.
-// Reuqest 的 Write 函数, 就是将 HttpBody 的部分, 保存到本地. 
+// Reuqest 的 Write 函数, 就是将 HttpBody 的部分, 保存到本地.
 - (void)prepareForWriting {
   _writer = self;
   if ([GCDWebServerNormalizeHeaderValue([self.headers objectForKey:@"Content-Encoding"]) isEqualToString:@"gzip"]) {

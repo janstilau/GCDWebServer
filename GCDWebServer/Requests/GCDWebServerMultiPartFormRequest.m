@@ -105,7 +105,10 @@ static NSData* _dashNewlineData = nil;
   }
 }
 
-- (instancetype)initWithBoundary:(NSString* _Nonnull)boundary defaultControlName:(NSString* _Nullable)name arguments:(NSMutableArray<GCDWebServerMultiPartArgument*>* _Nonnull)arguments files:(NSMutableArray<GCDWebServerMultiPartFile*>* _Nonnull)files {
+- (instancetype)initWithBoundary:(NSString* _Nonnull)boundary
+              defaultControlName:(NSString* _Nullable)name
+                       arguments:(NSMutableArray<GCDWebServerMultiPartArgument*>* _Nonnull)arguments
+                           files:(NSMutableArray<GCDWebServerMultiPartFile*>* _Nonnull)files {
   NSData* data = boundary.length ? [[NSString stringWithFormat:@"--%@", boundary] dataUsingEncoding:NSASCIIStringEncoding] : nil;
   if (data == nil) {
     GWS_DNOT_REACHED();
@@ -130,6 +133,7 @@ static NSData* _dashNewlineData = nil;
 }
 
 // http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2
+// MultiPart 真正进行解析的部分.
 - (BOOL)_parseData {
   BOOL success = YES;
   
@@ -285,8 +289,10 @@ static NSData* _dashNewlineData = nil;
 @end
 
 @interface GCDWebServerMultiPartFormRequest ()
+
 @property(nonatomic) NSMutableArray<GCDWebServerMultiPartArgument*>* arguments;
 @property(nonatomic) NSMutableArray<GCDWebServerMultiPartFile*>* files;
+
 @end
 
 @implementation GCDWebServerMultiPartFormRequest {
@@ -307,6 +313,7 @@ static NSData* _dashNewlineData = nil;
 
 - (BOOL)open:(NSError**)error {
   NSString* boundary = GCDWebServerExtractHeaderValueParameter(self.contentType, @"boundary");
+  // 这里是将 _arguments, _files  的指针传递进去了, 所以里面会导致引用对象的值的改变.
   _parser = [[GCDWebServerMIMEStreamParser alloc] initWithBoundary:boundary defaultControlName:nil arguments:_arguments files:_files];
   if (_parser == nil) {
     if (error) {
