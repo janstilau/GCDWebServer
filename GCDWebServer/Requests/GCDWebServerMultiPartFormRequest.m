@@ -184,6 +184,7 @@ static NSData* _dashNewlineData = nil;
             success = NO;
           }
         } else if (_fileName) {
+          // /var/folders/2r/h6p4m2ns0mv0c9q0jt15_3yr0000gp/T/1C7F2BE7-19D3-45BC-B07F-9D7ED5FEE42D-20127-000057DEFECFD3BA
           NSString* path = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]];
           _tmpFile = open([path fileSystemRepresentation], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
           if (_tmpFile > 0) {
@@ -220,6 +221,7 @@ static NSData* _dashNewlineData = nil;
             }
             _subParser = nil;
           } else if (_tmpPath) {
+            // 在这里进行了文件的写入.
             ssize_t result = write(_tmpFile, dataBytes, dataLength);
             if (result == (ssize_t)dataLength) {
               if (close(_tmpFile) == 0) {

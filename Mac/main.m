@@ -109,7 +109,7 @@ typedef enum {
 int main(int argc, const char* argv[]) {
   int result = -1;
   @autoreleasepool {
-    Mode mode = kMode_HTMLForm;
+    Mode mode = kMode_HTMLFileUpload;
     BOOL recording = NO;
     NSString* rootDirectory = NSHomeDirectory();
     NSString* testDirectory = nil;

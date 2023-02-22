@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
+/*
+ GCDWebUploader 这个类, 并没有进行任何服务器新功能的添加, 它自己定义了一组接口, 供外界直接使用.
+ 可以说, 这个类是一个配置类. 
+ */
 @implementation GCDWebUploader
 
 @dynamic delegate;
