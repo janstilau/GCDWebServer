@@ -116,7 +116,11 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
   NSMutableDictionary<NSString*, id>* _attributes;
 }
 
-- (instancetype)initWithMethod:(NSString*)method url:(NSURL*)url headers:(NSDictionary<NSString*, NSString*>*)headers path:(NSString*)path query:(NSDictionary<NSString*, NSString*>*)query {
+- (instancetype)initWithMethod:(NSString*)method
+                           url:(NSURL*)url
+                       headers:(NSDictionary<NSString*, NSString*>*)headers
+                          path:(NSString*)path
+                         query:(NSDictionary<NSString*, NSString*>*)query {
   if ((self = [super init])) {
     _method = [method copy];
     _URL = url;
