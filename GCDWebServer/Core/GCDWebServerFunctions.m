@@ -55,6 +55,7 @@ NSString* GCDWebServerNormalizeHeaderValue(NSString* value) {
   return value;
 }
 
+// 这里的逻辑很简单, 找到 ; 之前的数据, 然后返回.
 NSString* GCDWebServerTruncateHeaderValue(NSString* value) {
   if (value) {
     NSRange range = [value rangeOfString:@";"];
@@ -131,6 +132,7 @@ BOOL GCDWebServerIsTextContentType(NSString* type) {
 NSString* GCDWebServerDescribeData(NSData* data, NSString* type) {
   if (GCDWebServerIsTextContentType(type)) {
     NSString* charset = GCDWebServerExtractHeaderValueParameter(type, @"charset");
+    // 使用 request header 里面的 content-type 值, 将 body 里面的内容转化为 text 的内容. 
     NSString* string = [[NSString alloc] initWithData:data encoding:GCDWebServerStringEncodingFromCharset(charset)];
     if (string) {
       return string;
@@ -173,6 +175,7 @@ NSString* GCDWebServerUnescapeURLString(NSString* string) {
 #pragma clang diagnostic pop
 }
 
+// 这种解析字符串的过程过于细节, 不看. 
 NSDictionary<NSString*, NSString*>* GCDWebServerParseURLEncodedForm(NSString* form) {
   NSMutableDictionary* parameters = [NSMutableDictionary dictionary];
   NSScanner* scanner = [[NSScanner alloc] initWithString:form];

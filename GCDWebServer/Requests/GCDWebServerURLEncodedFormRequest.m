@@ -15,6 +15,7 @@
     return NO;
   }
 
+  // 在 Close 的时候, 将 Request Body 拼接成为字符串之后, 然后分析数据成为一个 NSDict 对象.
   NSString* charset = GCDWebServerExtractHeaderValueParameter(self.contentType, @"charset");
   NSString* string = [[NSString alloc] initWithData:self.data encoding:GCDWebServerStringEncodingFromCharset(charset)];
   _arguments = GCDWebServerParseURLEncodedForm(string);

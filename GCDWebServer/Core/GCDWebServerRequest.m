@@ -107,10 +107,12 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
 
 @end
 
+
+
 @implementation GCDWebServerRequest {
   BOOL _opened;
   NSMutableArray<GCDWebServerBodyDecoder*>* _decoders;
-  id<GCDWebServerBodyWriter> __unsafe_unretained _writer;
+  id<GCDWebServerBodyWriter> __unsafe_unretained _writer; // 因为这个 Writer, 有可能是 self, 所以这里没有使用 strong 引用.
   NSMutableDictionary<NSString*, id>* _attributes;
 }
 
@@ -121,7 +123,7 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
     _headers = headers;
     _path = [path copy];
     _query = query;
-
+    
     _contentType = GCDWebServerNormalizeHeaderValue([_headers objectForKey:@"Content-Type"]);
     _usesChunkedTransferEncoding = [GCDWebServerNormalizeHeaderValue([_headers objectForKey:@"Transfer-Encoding"]) isEqualToString:@"chunked"];
     NSString* lengthHeader = [_headers objectForKey:@"Content-Length"];
@@ -148,13 +150,13 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
       }
       _contentLength = NSUIntegerMax;
     }
-
+    
     NSString* modifiedHeader = [_headers objectForKey:@"If-Modified-Since"];
     if (modifiedHeader) {
       _ifModifiedSince = [GCDWebServerParseRFC822(modifiedHeader) copy];
     }
     _ifNoneMatch = [_headers objectForKey:@"If-None-Match"];
-
+    
     _byteRange = NSMakeRange(NSUIntegerMax, 0);
     NSString* rangeHeader = GCDWebServerNormalizeHeaderValue([_headers objectForKey:@"Range"]);
     if (rangeHeader) {
@@ -184,11 +186,11 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
         GWS_LOG_WARNING(@"Failed to parse 'Range' header \"%@\" for url: %@", rangeHeader, url);
       }
     }
-
+    
     if ([[_headers objectForKey:@"Accept-Encoding"] rangeOfString:@"gzip"].location != NSNotFound) {
       _acceptsGzipContentEncoding = YES;
     }
-
+    
     _decoders = [[NSMutableArray alloc] init];
     _attributes = [[NSMutableDictionary alloc] init];
   }
@@ -207,6 +209,11 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
   return [_attributes objectForKey:key];
 }
 
+/*
+ GCDWebServerBodyWriter
+ 作为父类里面, 对于 GCDWebServerBodyWriter 的实现, 只是提供最简单的实现.
+ 真正的实现, 等到各个子类里面进行实现.
+ */
 - (BOOL)open:(NSError**)error {
   return YES;
 }
@@ -219,6 +226,8 @@ NSString* const GCDWebServerRequestAttribute_RegexCaptures = @"GCDWebServerReque
   return YES;
 }
 
+// 当 Request 还有 Body 的时候, 会进行自 write 的逻辑准备.
+// Reuqest 的 Write 函数, 就是将 HttpBody 的部分, 保存到本地. 
 - (void)prepareForWriting {
   _writer = self;
   if ([GCDWebServerNormalizeHeaderValue([self.headers objectForKey:@"Content-Encoding"]) isEqualToString:@"gzip"]) {

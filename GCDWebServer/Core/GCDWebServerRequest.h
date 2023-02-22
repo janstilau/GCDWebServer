@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-/**
+/*
  *  Attribute key to retrieve an NSArray containing NSStrings from a GCDWebServerRequest
  *  with the contents of any regular expression captures done on the request path.
  *
@@ -11,7 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 extern NSString* const GCDWebServerRequestAttribute_RegexCaptures;
 
-/**
+
+/*
  *  This protocol is used by the GCDWebServerConnection to communicate with
  *  the GCDWebServerRequest and write the received HTTP body data.
  *
@@ -96,6 +96,9 @@ extern NSString* const GCDWebServerRequestAttribute_RegexCaptures;
  *  This property will be nil if the request has no body or set to
  *  "application/octet-stream" if a body is present but there was no
  *  "Content-Type" header.
+ 
+ Content-Type: text/html; charset=utf-8
+ Content-Type: multipart/form-data; boundary=something
  */
 @property(nonatomic, readonly, nullable) NSString* contentType;
 

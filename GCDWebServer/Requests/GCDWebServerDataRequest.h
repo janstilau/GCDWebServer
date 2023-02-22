@@ -2,10 +2,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
+/*
  *  The GCDWebServerDataRequest subclass of GCDWebServerRequest stores the body
  *  of the HTTP request in memory.
  */
+// GCDWebServerDataRequest 大部分的能力, 是复用 GCDWebServerRequest 的. 只是 GCDWebServerBodyWriter 的相关实现, 变为了内存 NSMutableData 的拼接.
 @interface GCDWebServerDataRequest : GCDWebServerRequest
 
 /**
@@ -17,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GCDWebServerDataRequest (Extensions)
 
-/**
+/*
  *  Returns the data for the request body interpreted as text. If the content
  *  type of the body is not a text one, or if an error occurs, nil is returned.
  *
@@ -26,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, readonly, nullable) NSString* text;
 
-/**
+/*
  *  Returns the data for the request body interpreted as a JSON object. If the
  *  content type of the body is not JSON, or if an error occurs, nil is returned.
  */

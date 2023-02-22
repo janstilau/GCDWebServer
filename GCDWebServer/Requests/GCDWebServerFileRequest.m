@@ -8,8 +8,19 @@
   int _file;
 }
 
-- (instancetype)initWithMethod:(NSString*)method url:(NSURL*)url headers:(NSDictionary<NSString*, NSString*>*)headers path:(NSString*)path query:(NSDictionary<NSString*, NSString*>*)query {
+- (instancetype)initWithMethod:(NSString*)method
+                           url:(NSURL*)url
+                       headers:(NSDictionary<NSString*, NSString*>*)headers
+                          path:(NSString*)path
+                         query:(NSDictionary<NSString*, NSString*>*)query {
   if ((self = [super initWithMethod:method url:url headers:headers path:path query:query])) {
+    /*
+     The global ID for the process includes the host name, process ID, and a time stamp,
+     which ensures that the ID is unique for the network.
+     This property generates a new string each time its getter is invoked, and it uses a counter to guarantee that strings created from the same process are unique.
+     和自己本身实现的根据时间戳生成的名称没有太大问题.
+     API 提供了更加方便的实现方式.
+     */
     _temporaryPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]];
   }
   return self;
@@ -40,6 +51,7 @@
   return YES;
 }
 
+// FileRequest 就是将 Request 里面的 Data 数据, 存放到一个临时文件里面. 
 - (BOOL)close:(NSError**)error {
   if (close(_file) < 0) {
     if (error) {

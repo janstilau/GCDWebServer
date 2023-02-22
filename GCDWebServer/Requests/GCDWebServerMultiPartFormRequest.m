@@ -39,7 +39,7 @@ static NSData* _dashNewlineData = nil;
 - (instancetype)initWithControlName:(NSString* _Nonnull)name contentType:(NSString* _Nonnull)type data:(NSData* _Nonnull)data {
   if ((self = [super initWithControlName:name contentType:type])) {
     _data = data;
-
+    
     if ([self.contentType hasPrefix:@"text/"]) {
       NSString* charset = GCDWebServerExtractHeaderValueParameter(self.contentType, @"charset");
       _string = [[NSString alloc] initWithData:_data encoding:GCDWebServerStringEncodingFromCharset(charset)];
@@ -81,7 +81,7 @@ static NSData* _dashNewlineData = nil;
   NSMutableData* _data;
   NSMutableArray<GCDWebServerMultiPartArgument*>* _arguments;
   NSMutableArray<GCDWebServerMultiPartFile*>* _files;
-
+  
   NSString* _controlName;
   NSString* _fileName;
   NSString* _contentType;
@@ -132,7 +132,7 @@ static NSData* _dashNewlineData = nil;
 // http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2
 - (BOOL)_parseData {
   BOOL success = YES;
-
+  
   if (_state == kParserState_Headers) {
     NSRange range = [_data rangeOfData:_newlinesData options:0 range:NSMakeRange(0, _data.length)];
     if (range.location != NSNotFound) {
@@ -193,12 +193,12 @@ static NSData* _dashNewlineData = nil;
         GWS_DNOT_REACHED();
         success = NO;
       }
-
+      
       [_data replaceBytesInRange:NSMakeRange(0, range.location + range.length) withBytes:NULL length:0];
       _state = kParserState_Content;
     }
   }
-
+  
   if ((_state == kParserState_Start) || (_state == kParserState_Content)) {
     NSRange range = [_data rangeOfData:_boundary options:0 range:NSMakeRange(0, _data.length)];
     if (range.location != NSNotFound) {
@@ -237,7 +237,7 @@ static NSData* _dashNewlineData = nil;
             [_arguments addObject:argument];
           }
         }
-
+        
         if (subRange1.location != NSNotFound) {
           [_data replaceBytesInRange:NSMakeRange(0, subRange1.location + subRange1.length) withBytes:NULL length:0];
           _state = kParserState_Headers;
@@ -269,7 +269,7 @@ static NSData* _dashNewlineData = nil;
       }
     }
   }
-
+  
   return success;
 }
 

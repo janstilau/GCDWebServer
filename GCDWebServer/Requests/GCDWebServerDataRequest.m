@@ -6,7 +6,9 @@
 
 // Data Request, 就是将数据存储到内存里面的 NSMutableData 里面.
 @interface GCDWebServerDataRequest ()
+
 @property(nonatomic) NSMutableData* data;
+
 @end
 
 @implementation GCDWebServerDataRequest {
@@ -16,6 +18,8 @@
 
 - (BOOL)open:(NSError**)error {
   if (self.contentLength != NSUIntegerMax) {
+    // 使用 self.contentLength 可以使得 NSMutableData 的建立更加的高效.
+    // _data 的创建, 延缓到了真正业务调用的地方.
     _data = [[NSMutableData alloc] initWithCapacity:self.contentLength];
   } else {
     _data = [[NSMutableData alloc] init];
@@ -68,7 +72,9 @@
 - (id)jsonObject {
   if (_jsonObject == nil) {
     NSString* mimeType = GCDWebServerTruncateHeaderValue(self.contentType);
-    if ([mimeType isEqualToString:@"application/json"] || [mimeType isEqualToString:@"text/json"] || [mimeType isEqualToString:@"text/javascript"]) {
+    if ([mimeType isEqualToString:@"application/json"] ||
+        [mimeType isEqualToString:@"text/json"] ||
+        [mimeType isEqualToString:@"text/javascript"]) {
       _jsonObject = [NSJSONSerialization JSONObjectWithData:_data options:0 error:NULL];
     } else {
       GWS_DNOT_REACHED();
