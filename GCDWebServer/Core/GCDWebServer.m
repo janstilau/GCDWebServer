@@ -410,6 +410,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
                        length:(socklen_t)length
         maxPendingConnections:(NSUInteger)maxPendingConnections
                         error:(NSError**)error {
+  // 在这里, 使用了 socket 的 api, 返回了 socket 对应的文件描述符.
   int listeningSocket = socket(useIPv6 ? PF_INET6 : PF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (listeningSocket > 0) {
     int yes = 1;
@@ -447,6 +448,11 @@ static inline NSString* _EncodeBase64(NSString* string) {
 - (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket
                                                        isIPv6:(BOOL)isIPv6 {
   dispatch_group_enter(_sourceGroup);
+  /*
+   A dispatch source that monitors a file descriptor for pending bytes available to be read.
+   The handle is a file descriptor (int). The mask is unused (pass zero for now).
+   dispatch_source_t dispatch_source_create(dispatch_source_type_t type, uintptr_t handle, uintptr_t mask, dispatch_queue_t queue);
+   */
   dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
                                                     listeningSocket,
                                                     0,
@@ -510,6 +516,8 @@ static inline NSString* _EncodeBase64(NSString* string) {
   addr4.sin_family = AF_INET;
   addr4.sin_port = htons(port);
   addr4.sin_addr.s_addr = bindToLocalhost ? htonl(INADDR_LOOPBACK) : htonl(INADDR_ANY);
+  // _createListeningSocket 方法返回的, 是一个文件描述符.
+  // 后面 dispatch source 建立监听的时候, 也是在监听这个文件描述符.
   int listeningSocket4 = [self _createListeningSocket:NO localAddress:&addr4 length:sizeof(addr4) maxPendingConnections:maxPendingConnections error:error];
   if (listeningSocket4 <= 0) {
     return NO;
